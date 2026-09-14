@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
 <title>Meow星造型师</title>
 <link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Press+Start+2P&family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
@@ -29,7 +29,6 @@
     background-size: 26px 26px;
     color: var(--ink);
     min-height: 100vh;
-    overflow-x: hidden;
   }
 
   /* ===== 头部 ===== */
@@ -222,6 +221,7 @@
   }
   .stage img { z-index: 1; object-fit: cover; pointer-events: none; }
   #drawCanvas { z-index: 2; touch-action: none; cursor: crosshair; }
+  #drawCanvas.locked { touch-action: auto; cursor: default; }
   #gridCanvas { z-index: 3; pointer-events: none; }
 
   .stage-bar {
@@ -433,7 +433,7 @@
       <span class="dot dot-mint"></span>
       <span class="dot dot-sun"></span>
       <span class="grow">画布 CANVAS 100 × 100</span>
-      <span class="hint">在猫咪上拖动笔刷开始绘制 · DRAG ON THE CAT TO DRAW</span>
+      <span class="hint">先选择颜色或贴纸，再在猫咪上绘制 · Pick a color or sticker to start drawing</span>
     </div>
   </section>
 
@@ -570,9 +570,7 @@
   var lastCell = null;
   var dirty = false;
   var undoStack = [];
-  var touchPointers = {};
-  var strokeDirtyAtStart = false;
-  var placingSticker = false;
+  var paintingEnabled = false;
 
   // ===== 画布初始化 =====
   function initCanvas() {
@@ -1048,6 +1046,7 @@
       activeSticker = null;
     } else {
       activeSticker = { cat: cat, idx: idx, tpl: STICKERS[cat][idx] };
+      unlockPainting();
     }
     updateStickerActiveUI();
     updateCanvasCursor();
@@ -1120,30 +1119,19 @@
   rotCCW.addEventListener('click', function () { rotateSticker(-45); });
 
   // ===== 指针绘制 =====
-  function cancelStroke() {
-    if ((drawing || placingSticker) && undoStack.length > 0) {
-      var entry = undoStack.pop();
-      dctx.putImageData(entry.img, 0, 0);
-      placedStickers = entry.stickers;
-      dirty = strokeDirtyAtStart;
-      updateUndoBtn();
-    }
-    drawing = false;
-    lastCell = null;
+  function unlockPainting() {
+    if (paintingEnabled) return;
+    paintingEnabled = true;
+    drawCanvas.classList.remove('locked');
+    toast('画笔已启用 · Brush unlocked');
   }
 
+  drawCanvas.classList.add('locked');
+
   drawCanvas.addEventListener('pointerdown', function (e) {
+    if (!paintingEnabled) return;
     e.preventDefault();
-    if (e.pointerType === 'touch') {
-      touchPointers[e.pointerId] = true;
-      if (Object.keys(touchPointers).length > 1) {
-        cancelStroke();
-        return;
-      }
-    }
     if (activeSticker) {
-      placingSticker = true;
-      strokeDirtyAtStart = dirty;
       snapshot();
       var pos = getCanvasPos(e);
       stampStickerAt(pos.x, pos.y);
@@ -1152,7 +1140,6 @@
     drawCanvas.setPointerCapture(e.pointerId);
     drawing = true;
     lastCell = null;
-    strokeDirtyAtStart = dirty;
     snapshot();
     strokeTo(getCell(e));
   });
@@ -1162,17 +1149,15 @@
     strokeTo(getCell(e));
   });
 
-  function endStroke(e) {
-    if (e.pointerType === 'touch' && touchPointers[e.pointerId]) {
-      delete touchPointers[e.pointerId];
-    }
-    placingSticker = false;
+  function endStroke() {
     drawing = false;
     lastCell = null;
   }
   drawCanvas.addEventListener('pointerup', endStroke);
   drawCanvas.addEventListener('pointercancel', endStroke);
   drawCanvas.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+  toast('画笔已锁定：先选择颜色或贴纸，再开始绘制 · Brush locked: pick a color or sticker to start');
 
   // ===== 调色板 =====
   COLORS.forEach(function (color, i) {
@@ -1185,6 +1170,7 @@
       eraser = false;
       updateEraserBtn();
       brushColor = color;
+      unlockPainting();
       var swatches = paletteEl.querySelectorAll('.swatch');
       for (var j = 0; j < swatches.length; j++) {
         swatches[j].classList.toggle('is-active', j === i);
