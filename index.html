@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Meow星造型师</title>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Press+Start+2P&family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
+<style>
+  :root {
+    --paper: #F6EFE3;
+    --ink: #33272A;
+    --accent: #FF5C7A;
+    --mint: #7ED9C4;
+    --sun: #FFD23F;
+    --panel: #FFFFFF;
+    --muted: #7A6A62;
+    --shadow: rgba(51, 39, 42, 0.15);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+    background-color: var(--paper);
+    background-image: radial-gradient(rgba(51, 39, 42, 0.07) 1.5px, transparent 1.5px);
+    background-size: 26px 26px;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ===== 头部 ===== */
+  .site-header {
+    text-align: center;
+    padding: 34px 20px 20px;
+  }
+  .kicker {
+    margin: 0 0 8px;
+    font-family: 'Press Start 2P', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--accent);
+  }
+  .site-header h1 {
+    margin: 0 0 8px;
+    font-size: clamp(26px, 5vw, 40px);
+    font-weight: 900;
+    letter-spacing: 2px;
+  }
+  .sub { margin: 0; color: var(--muted); font-size: 15px; line-height: 1.7; }
+  .sub-en { display: block; font-size: 12px; opacity: 0.8; letter-spacing: 0.4px; }
+
+  /* ===== 主区域 ===== */
+  .studio {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 20px 40px;
+    display: grid;
+    grid-template-columns: 248px minmax(0, 1fr) 248px;
+    gap: 18px;
+    align-items: start;
+  }
+
+  .work-area { display: grid; gap: 18px; min-width: 0; }
+
+  /* ===== 左侧模板栏 ===== */
+  .template-panel {
+    background: var(--panel);
+    border: 4px solid var(--ink);
+    box-shadow: 10px 10px 0 var(--shadow);
+    padding: 16px;
+    position: sticky;
+    top: 16px;
+  }
+  .template-panel h2 {
+    margin: 0 0 14px;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tpl-badge { width: 12px; height: 12px; background: var(--mint); flex: none; }
+  .h2-en { margin-left: auto; font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: 1px; }
+  .en { display: block; font-size: 10px; font-weight: 500; letter-spacing: 0.5px; opacity: 0.72; line-height: 1.3; }
+  .btn-txt { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; line-height: 1.25; }
+  .template-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .template-card {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    padding: 6px 6px 8px;
+    border: 3px solid var(--ink);
+    background: #FFFFFF;
+    box-shadow: 3px 3px 0 var(--ink);
+    font-family: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+  .template-card:hover { background: #FFF6EA; transform: translateY(-2px); }
+  .template-card:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+  .template-card img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; display: block; background: #EFE6D6; pointer-events: none; }
+  .template-card .item-name { display: flex; flex-direction: column; align-items: center; gap: 1px; font-size: 12px; font-weight: 700; line-height: 1.3; }
+  .template-card.is-active { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  /* ===== 右侧贴纸栏 ===== */
+  .sticker-panel {
+    background: var(--panel);
+    border: 4px solid var(--ink);
+    box-shadow: 10px 10px 0 var(--shadow);
+    padding: 16px;
+    position: sticky;
+    top: 16px;
+  }
+  .sticker-panel h2 {
+    margin: 0 0 14px;
+    font-size: 16px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sticker-menu { display: grid; gap: 10px; }
+  .sticker-menu + .sticker-menu { margin-top: 12px; }
+  .sticker-drop {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 10px 12px;
+    border: 3px solid var(--ink);
+    background: #FFFFFF;
+    box-shadow: 3px 3px 0 var(--ink);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .sticker-drop:hover { background: #FFF6EA; }
+  .sticker-drop .chev { width: 16px; height: 16px; transition: transform 0.18s ease; }
+  .sticker-drop[aria-expanded="true"] .chev { transform: rotate(180deg); }
+  .sticker-body[hidden] { display: none; }
+  .sticker-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+  .sticker-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: center;
+    padding: 8px 6px;
+    border: 3px solid var(--ink);
+    background: #FFFFFF;
+    box-shadow: 3px 3px 0 var(--ink);
+    font-family: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+  .sticker-item:hover { background: #FFF6EA; transform: translateY(-1px); }
+  .sticker-item:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+  .sticker-item canvas { width: 48px; height: 48px; display: block; }
+  .sticker-item .item-name { display: flex; flex-direction: column; align-items: center; gap: 1px; font-size: 12px; font-weight: 700; line-height: 1.3; }
+  .sticker-item.is-active { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  /* ===== 确认弹窗 ===== */
+  .modal-mask {
+    position: fixed;
+    inset: 0;
+    background: rgba(51, 39, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .modal-mask[hidden] { display: none; }
+  .modal-mask.show { opacity: 1; pointer-events: auto; }
+  .modal {
+    background: var(--panel);
+    border: 4px solid var(--ink);
+    box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.28);
+    padding: 22px;
+    width: min(380px, calc(100vw - 48px));
+    transform: translateY(10px);
+    transition: transform 0.2s ease;
+  }
+  .modal-mask.show .modal { transform: none; }
+  .modal-text { margin: 0 0 20px; font-size: 15px; font-weight: 700; line-height: 1.7; }
+  .modal-actions { display: flex; gap: 12px; }
+  .modal-actions .btn { flex: 1; padding: 12px 10px; font-size: 14px; box-shadow: 4px 4px 0 var(--ink); }
+  .modal-actions .btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+
+  .canvas-card {
+    background: var(--panel);
+    border: 4px solid var(--ink);
+    box-shadow: 10px 10px 0 var(--shadow);
+    padding: 14px;
+  }
+
+  .stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+    background: #EFE6D6;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  .stage img,
+  .stage canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .stage img { z-index: 1; object-fit: cover; pointer-events: none; }
+  #drawCanvas { z-index: 2; touch-action: none; cursor: crosshair; }
+  #gridCanvas { z-index: 3; pointer-events: none; }
+
+  .stage-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 8px 12px;
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    font-weight: 700;
+    font-size: 13px;
+  }
+  .stage-bar .dot { width: 10px; height: 10px; flex: none; }
+  .dot.dot-accent { background: var(--accent); }
+  .dot.dot-mint { background: var(--mint); }
+  .dot.dot-sun { background: var(--sun); }
+  .stage-bar .grow { flex: 1; }
+  .stage-bar .hint { color: var(--muted); font-weight: 500; }
+
+  /* ===== 工具栏 ===== */
+  .toolbar {
+    display: grid;
+    gap: 14px;
+    background: var(--panel);
+    border: 4px solid var(--ink);
+    box-shadow: 10px 10px 0 var(--shadow);
+    padding: 16px;
+  }
+
+  .palette { display: flex; flex-wrap: wrap; gap: 10px; }
+  .swatch {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 3px solid var(--ink);
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.12s ease;
+  }
+  .swatch:hover { transform: scale(1.1); }
+  .swatch.is-active { outline: 3px solid var(--accent); outline-offset: 3px; transform: scale(1.1); }
+
+  .tool-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .tool-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #FFFFFF;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 var(--ink);
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .tool-btn:hover { background: #FFF6EA; }
+  .tool-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--ink); }
+  .tool-btn.is-active { background: var(--ink); color: #FFFFFF; }
+  .tool-btn svg { width: 18px; height: 18px; flex: none; }
+  .tool-btn:disabled { opacity: 0.35; cursor: not-allowed; box-shadow: none; }
+  .tool-btn:disabled:active { transform: none; }
+
+  .size-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .size-label { font-weight: 700; font-size: 14px; }
+  .size-btn {
+    padding: 8px 14px;
+    border: 3px solid var(--ink);
+    background: #FFFFFF;
+    box-shadow: 3px 3px 0 var(--ink);
+    font-family: 'Press Start 2P', 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    font-size: 11px;
+    color: var(--ink);
+    cursor: pointer;
+  }
+  .size-btn:hover { background: #FFF6EA; }
+  .size-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+  .size-btn.is-active { background: var(--sun); }
+  .rot-sep { width: 3px; align-self: stretch; background: rgba(51, 39, 42, 0.18); }
+  .rot-btn { box-shadow: 3px 3px 0 var(--ink); padding: 8px 12px; font-size: 13px; }
+  .rot-indicator {
+    width: 40px;
+    height: 40px;
+    flex: none;
+    border: 3px solid var(--ink);
+    background: #FFFFFF;
+    box-shadow: 3px 3px 0 var(--ink);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .rot-indicator svg {
+    width: 22px;
+    height: 22px;
+    transition: transform 0.2s ease;
+  }
+
+  /* ===== 底部操作 ===== */
+  .actions { display: flex; gap: 16px; }
+  .btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 20px;
+    border: 4px solid var(--ink);
+    box-shadow: 6px 6px 0 var(--ink);
+    font-family: inherit;
+    font-size: 17px;
+    font-weight: 900;
+    cursor: pointer;
+    transition: filter 0.12s ease;
+  }
+  .btn svg { width: 20px; height: 20px; flex: none; }
+  .btn:active { transform: translate(3px, 3px); box-shadow: 3px 3px 0 var(--ink); }
+  .btn-primary { background: var(--accent); color: #FFFFFF; }
+  .btn-primary:hover { filter: brightness(1.06); }
+  .btn-ghost { background: #FFFFFF; color: var(--ink); }
+  .btn-ghost:hover { background: #FFF6EA; }
+
+  .site-footer {
+    text-align: center;
+    padding: 4px 20px 36px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* ===== 轻提示 ===== */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 30px;
+    transform: translateX(-50%) translateY(16px);
+    background: var(--ink);
+    color: #FFFFFF;
+    padding: 12px 22px;
+    border: 3px solid var(--ink);
+    box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.25);
+    font-weight: 700;
+    font-size: 14px;
+    text-align: center;
+    max-width: min(90vw, 640px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    z-index: 50;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ===== 中屏：侧栏转横向布局 ===== */
+  @media (max-width: 1024px) {
+    .studio { grid-template-columns: 1fr; }
+    .template-panel { position: static; }
+    .sticker-panel { position: static; }
+    .template-grid { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 6px; }
+    .template-card { min-width: 96px; flex: none; width: 96px; }
+    .template-card:hover { transform: none; }
+    .sticker-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+    .sticker-item { width: 72px; }
+  }
+
+  /* ===== 窄屏适配 ===== */
+  @media (max-width: 640px) {
+    .site-header { padding: 24px 16px 16px; }
+    .studio { padding: 0 12px 28px; gap: 14px; }
+    .canvas-card { padding: 10px; }
+    .toolbar { padding: 12px; }
+    .swatch { width: 30px; height: 30px; }
+    .actions { flex-direction: column; gap: 12px; }
+    .btn { padding: 15px 16px; }
+    .stage-bar .hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <p class="kicker">喵星造型 · MEOW STYLIST</p>
+  <h1>Meow星造型师</h1>
+  <p class="sub">挑选猫咪模板，设计发型与装饰，保存你的像素杰作
+    <span class="sub-en">Pick a cat template, style its hair &amp; accessories, save your pixel art</span>
+  </p>
+</header>
+
+<main class="studio">
+
+  <aside class="template-panel" aria-label="猫咪模板">
+    <h2><span class="tpl-badge"></span>猫咪模板<span class="h2-en">CAT TEMPLATES</span></h2>
+    <div class="template-grid" id="templateGrid"></div>
+  </aside>
+
+  <div class="work-area">
+
+  <section class="canvas-card" aria-label="画布区域">
+    <div class="stage">
+      <img id="catImg"
+           src="https://p26-flow-sign.byteimg.com/tos-cn-i-ik7evvg4ik/5fe6a115a6054c4ab75fb2b3ec02891a.jpg~tplv-a9rns2rl98-image.image?lk3s=8e244e95&amp;rcl=202609140925253D32D3C7FEA3E9F145AE&amp;rrcfp=a6e186ed&amp;x-expires=1791941125&amp;x-signature=I8%2FkicVvWe1YN%2BlKzDshDBEQksY%3D"
+           alt="猫咪正脸照片"
+           crossorigin="anonymous"
+           draggable="false">
+      <canvas id="drawCanvas"></canvas>
+      <canvas id="gridCanvas"></canvas>
+    </div>
+    <div class="stage-bar">
+      <span class="dot dot-accent"></span>
+      <span class="dot dot-mint"></span>
+      <span class="dot dot-sun"></span>
+      <span class="grow">画布 CANVAS 100 × 100</span>
+      <span class="hint">在猫咪上拖动笔刷开始绘制 · DRAG ON THE CAT TO DRAW</span>
+    </div>
+  </section>
+
+  <section class="toolbar" aria-label="工具栏">
+    <div class="palette" id="palette" aria-label="调色板"></div>
+
+    <div class="tool-row">
+      <button id="eraserBtn" class="tool-btn" type="button" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4l6 6-10 10H6L3 17z"/><path d="M6 20h16"/></svg>
+        <span class="btn-txt"><span>橡皮</span><span class="en">ERASER</span></span>
+      </button>
+      <button id="gridBtn" class="tool-btn is-active" type="button" aria-pressed="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="6" height="6"/><rect x="14" y="4" width="6" height="6"/><rect x="4" y="14" width="6" height="6"/><rect x="14" y="14" width="6" height="6"/></svg>
+        <span class="btn-txt"><span>网格</span><span class="en">GRID</span></span>
+      </button>
+      <button id="undoBtn" class="tool-btn" type="button" disabled>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
+        <span class="btn-txt"><span>撤销</span><span class="en">UNDO</span></span>
+      </button>
+    </div>
+
+    <div class="size-row">
+      <span class="size-label">笔刷 BRUSH</span>
+      <button class="size-btn" type="button" data-size="1">1×1</button>
+      <button class="size-btn is-active" type="button" data-size="2">2×2</button>
+      <button class="size-btn" type="button" data-size="4">4×4</button>
+      <span class="rot-sep"></span>
+      <button id="rotCCW" class="tool-btn rot-btn" type="button" aria-label="逆时针旋转贴纸45度">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        <span class="btn-txt"><span>逆时针</span><span class="en">CCW</span></span>
+      </button>
+      <button id="rotCW" class="tool-btn rot-btn" type="button" aria-label="顺时针旋转贴纸45度">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        <span class="btn-txt"><span>顺时针</span><span class="en">CW</span></span>
+      </button>
+      <span class="rot-indicator" id="rotIndicator" title="当前旋转方向">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v15"/><path d="M6.5 9.5 12 4l5.5 5.5"/></svg>
+      </span>
+    </div>
+  </section>
+
+  <section class="actions" aria-label="保存与重置">
+    <button id="saveBtn" class="btn btn-primary" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v11"/><path d="M8 10l4 4 4-4"/><path d="M4 19h16"/></svg>
+      <span class="btn-txt"><span>保存图片</span><span class="en">SAVE AS JPEG</span></span>
+    </button>
+    <button id="resetBtn" class="btn btn-ghost" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M10 7V5h4v2"/><path d="M6 7l1 13h10l1-13"/><path d="M10 11v5"/><path d="M14 11v5"/></svg>
+      <span class="btn-txt"><span>重置</span><span class="en">RESET</span></span>
+    </button>
+  </section>
+
+  </div>
+
+  <aside class="sticker-panel" aria-label="装饰贴纸">
+    <h2><span class="tpl-badge"></span>装饰贴纸<span class="h2-en">STICKERS</span></h2>
+    <div class="sticker-menu">
+      <button class="sticker-drop" type="button" aria-expanded="true" aria-controls="decoBody">
+        <span class="btn-txt"><span>饰品</span><span class="en">ACCESSORIES</span></span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="sticker-body" id="decoBody">
+        <div class="sticker-grid" id="decoGrid"></div>
+      </div>
+    </div>
+    <div class="sticker-menu">
+      <button class="sticker-drop" type="button" aria-expanded="false" aria-controls="envBody">
+        <span class="btn-txt"><span>环境</span><span class="en">SCENERY</span></span>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="sticker-body" id="envBody" hidden>
+        <div class="sticker-grid" id="envGrid"></div>
+      </div>
+    </div>
+  </aside>
+
+</main>
+
+<div class="modal-mask" id="modalMask" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalText">
+    <p class="modal-text" id="modalText">当前造型尚未保存，是否确认切换模板？
+      <span class="sub-en">Your design is unsaved. Switch template?</span>
+    </p>
+    <div class="modal-actions">
+      <button id="modalCancel" class="btn btn-ghost" type="button"><span class="btn-txt"><span>取消</span><span class="en">CANCEL</span></span></button>
+      <button id="modalConfirm" class="btn btn-primary" type="button"><span class="btn-txt"><span>确认切换</span><span class="en">CONFIRM</span></span></button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">按 Ctrl+Z 撤销上一步 · 选中贴纸后点击画布放置 · 保存为 JPEG 图片
+  <span class="sub-en">Press Ctrl+Z to undo · select a sticker and click the canvas to place · save as JPEG</span>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  var CELLS = 100;          // 每边像素格子数
+  var MAX_SIDE = 900;       // 画布内部分辨率上限
+  var UNDO_LIMIT = 10;
+
+  var img = document.getElementById('catImg');
+  var drawCanvas = document.getElementById('drawCanvas');
+  var gridCanvas = document.getElementById('gridCanvas');
+  var dctx = drawCanvas.getContext('2d');
+  var gctx = gridCanvas.getContext('2d');
+
+  var paletteEl = document.getElementById('palette');
+  var eraserBtn = document.getElementById('eraserBtn');
+  var gridBtn = document.getElementById('gridBtn');
+  var undoBtn = document.getElementById('undoBtn');
+  var saveBtn = document.getElementById('saveBtn');
+  var resetBtn = document.getElementById('resetBtn');
+  var toastEl = document.getElementById('toast');
+
+  var COLORS = [
+    '#1F1B24', '#FFFFFF', '#9AA0A6', '#E63946', '#F77F00', '#FFD23F', '#2A9D4E',
+    '#2EC4B6', '#3A86FF', '#8E44AD', '#FF85A1', '#8B5E34', '#FFD9B3', '#C9B8A8'
+  ];
+  var NAMES = [
+    '墨黑', '纯白', '银灰', '番茄红', '蜜橙', '柠檬黄', '草绿',
+    '薄荷青', '天蓝', '葡萄紫', '樱花粉', '可可棕', '奶油肤', '奶茶棕'
+  ];
+
+  var cellPx = 9;
+  var brushColor = COLORS[0];
+  var brushSize = 2;
+  var eraser = false;
+  var showGrid = true;
+  var drawing = false;
+  var lastCell = null;
+  var dirty = false;
+  var undoStack = [];
+
+  // ===== 画布初始化 =====
+  function initCanvas() {
+    var side = Math.min(img.naturalWidth || 1024, img.naturalHeight || 1024, MAX_SIDE);
+    drawCanvas.width = side;
+    drawCanvas.height = side;
+    gridCanvas.width = side;
+    gridCanvas.height = side;
+    cellPx = side / CELLS;
+    drawGrid();
+  }
+
+  function drawGrid() {
+    gctx.clearRect(0, 0, gridCanvas.width, gridCanvas.height);
+    if (!showGrid) return;
+    var i, p;
+    gctx.strokeStyle = 'rgba(51,39,42,0.09)';
+    gctx.lineWidth = 1;
+    gctx.beginPath();
+    for (i = 1; i < CELLS; i++) {
+      p = i * cellPx;
+      gctx.moveTo(p, 0);
+      gctx.lineTo(p, gridCanvas.height);
+      gctx.moveTo(0, p);
+      gctx.lineTo(gridCanvas.width, p);
+    }
+    gctx.stroke();
+    gctx.strokeStyle = 'rgba(51,39,42,0.18)';
+    gctx.beginPath();
+    for (i = 10; i < CELLS; i += 10) {
+      p = i * cellPx;
+      gctx.moveTo(p, 0);
+      gctx.lineTo(p, gridCanvas.height);
+      gctx.moveTo(0, p);
+      gctx.lineTo(gridCanvas.width, p);
+    }
+    gctx.stroke();
+  }
+
+  // ===== 坐标换算 =====
+  function getCanvasPos(e) {
+    var rect = drawCanvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) * (drawCanvas.width / rect.width),
+      y: (e.clientY - rect.top) * (drawCanvas.height / rect.height)
+    };
+  }
+
+  function getCell(e) {
+    var p = getCanvasPos(e);
+    return {
+      col: Math.min(CELLS - 1, Math.max(0, Math.floor(p.x / cellPx))),
+      row: Math.min(CELLS - 1, Math.max(0, Math.floor(p.y / cellPx)))
+    };
+  }
+
+  // ===== 绘制 =====
+  function paintCell(col, row) {
+    var half = Math.floor(brushSize / 2);
+    var x0 = Math.max(0, col - half);
+    var y0 = Math.max(0, row - half);
+    var x1 = Math.min(CELLS, col - half + brushSize);
+    var y1 = Math.min(CELLS, row - half + brushSize);
+    if (x1 <= x0 || y1 <= y0) return;
+    dctx.save();
+    if (eraser) {
+      dctx.globalCompositeOperation = 'destination-out';
+      dctx.fillStyle = 'rgba(0,0,0,1)';
+    } else {
+      dctx.fillStyle = brushColor;
+    }
+    dctx.fillRect(x0 * cellPx, y0 * cellPx, (x1 - x0) * cellPx, (y1 - y0) * cellPx);
+    dctx.restore();
+    dirty = true;
+  }
+
+  function strokeTo(cell) {
+    if (lastCell) {
+      var c0 = lastCell.col, r0 = lastCell.row;
+      var c1 = cell.col, r1 = cell.row;
+      var steps = Math.max(Math.abs(c1 - c0), Math.abs(r1 - r0), 1);
+      var i, col, row;
+      for (i = 0; i <= steps; i++) {
+        col = Math.round(c0 + (c1 - c0) * i / steps);
+        row = Math.round(r0 + (r1 - r0) * i / steps);
+        paintCell(col, row);
+      }
+    } else {
+      paintCell(cell.col, cell.row);
+    }
+    lastCell = cell;
+  }
+
+  // ===== 撤销 / 重置 =====
+  function snapshot() {
+    undoStack.push({
+      img: dctx.getImageData(0, 0, drawCanvas.width, drawCanvas.height),
+      stickers: placedStickers.map(function (s) {
+        return { tpl: s.tpl, cx: s.cx, cy: s.cy, side: s.side, scale: s.scale, rot: s.rot, color: s.color };
+      })
+    });
+    if (undoStack.length > UNDO_LIMIT) undoStack.shift();
+    updateUndoBtn();
+  }
+
+  function doUndo() {
+    var entry = undoStack.pop();
+    if (entry) {
+      dctx.putImageData(entry.img, 0, 0);
+      placedStickers = entry.stickers;
+      toast('已撤销上一步 · Undone');
+    } else {
+      toast('没有可撤销的操作 · Nothing to undo');
+    }
+    updateUndoBtn();
+  }
+
+  function clearAll() {
+    if (!dirty) {
+      toast('画布本来就是空的 · Canvas is empty');
+      return;
+    }
+    snapshot();
+    dctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+    placedStickers = [];
+    dirty = false;
+    toast('已重置，绘画痕迹已清空 · Reset complete');
+    updateUndoBtn();
+  }
+
+  function updateUndoBtn() {
+    undoBtn.disabled = undoStack.length === 0;
+  }
+
+  // ===== 保存 JPEG =====
+  function saveImage() {
+    if (!img.complete || img.naturalWidth === 0) {
+      toast('猫咪图片还在加载中，稍后再试 · Image still loading');
+      return;
+    }
+    try {
+      var out = document.createElement('canvas');
+      out.width = drawCanvas.width;
+      out.height = drawCanvas.height;
+      var octx = out.getContext('2d');
+      octx.drawImage(img, 0, 0, out.width, out.height);
+      octx.drawImage(drawCanvas, 0, 0);
+      var a = document.createElement('a');
+      a.download = 'cat-pixel-' + Date.now() + '.jpg';
+      a.href = out.toDataURL('image/jpeg', 0.92);
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      toast('已保存 JPEG 到本地 · Saved as JPEG');
+    } catch (err) {
+      toast('保存失败：图片跨域限制 · Save failed: CORS');
+    }
+  }
+
+  // ===== 轻提示 =====
+  var toastTimer = null;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toastEl.classList.remove('show');
+    }, 1800);
+  }
+
+  // ===== 猫咪模板 =====
+  var TEMPLATES = [
+    { name: '橘猫', en: 'Orange', url: 'https://p26-flow-sign.byteimg.com/tos-cn-i-ik7evvg4ik/5fe6a115a6054c4ab75fb2b3ec02891a.jpg~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=202609140925253D32D3C7FEA3E9F145AE&rrcfp=a6e186ed&x-expires=1791941125&x-signature=I8%2FkicVvWe1YN%2BlKzDshDBEQksY%3D' },
+    { name: '英短蓝猫', en: 'British Blue', url: 'https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/e726d0bd2b0247dba4f2e1afe51e2851.jpeg~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026091409551995C421AD148B799063C5&rrcfp=02a80fc2&x-expires=1791942992&x-signature=geHu2CxaNDquKJvv5o8Wha5bXAo%3D' },
+    { name: '美短银虎斑', en: 'Silver Tabby', url: 'https://p6-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/ab2205b5b52141caaa07e463152043d4.jpeg~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=20260914100151AE10BF63BFE1C125F278&rrcfp=02a80fc2&x-expires=1791943360&x-signature=Gg%2B74%2B8r%2FuAfmwLrHITPRgT7o3Q%3D' },
+    { name: '暹罗猫', en: 'Siamese', url: 'https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/c08bb6d364a143fca2268f97fd563f7b.jpeg~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026091409551995C421AD148B799063C5&rrcfp=02a80fc2&x-expires=1791942989&x-signature=eym6aocrXiq324rrX%2F3LfcjK0j8%3D' },
+    { name: '布偶猫', en: 'Ragdoll', url: 'https://p26-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/ee228e35029c422ba3283112930682f6.jpeg~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026091409551995C421AD148B799063C5&rrcfp=02a80fc2&x-expires=1791942989&x-signature=7mgL4P2uIN%2BIAlzlma5EgvZ%2FOWc%3D' },
+    { name: '波斯猫', en: 'Persian', url: 'https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/192aca667481425d8794a4349a0c70fe.jpeg~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026091409551995C421AD148B799063C5&rrcfp=02a80fc2&x-expires=1791942989&x-signature=8bnXDrmwHkefZToBBYZ70Zw1Tt8%3D' },
+    { name: '三花猫', en: 'Calico', url: 'https://p11-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/f17b5be5c7d841309ccbb914253c5bf6.jpeg~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026091409551995C421AD148B799063C5&rrcfp=02a80fc2&x-expires=1791942990&x-signature=LoU0aam2pbEWi%2FoUEHyo3Vn5gR0%3D' },
+    { name: '缅因猫', en: 'Maine Coon', url: 'https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc_gen_image/ce0c25189e284addbe8be9e045a02db4.jpeg~tplv-a9rns2rl98-image.image?lk3s=8e244e95&rcl=2026091409551995C421AD148B799063C5&rrcfp=02a80fc2&x-expires=1791942993&x-signature=n1IYTBAWJAgHNOHpw3RxmIdfsag%3D' }
+  ];
+
+  var templateGrid = document.getElementById('templateGrid');
+  var modalMask = document.getElementById('modalMask');
+  var modalCancel = document.getElementById('modalCancel');
+  var modalConfirm = document.getElementById('modalConfirm');
+  var pendingIndex = null;
+  var activeIndex = 0;
+
+  function buildTemplates() {
+    TEMPLATES.forEach(function (t, i) {
+      var card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'template-card' + (i === 0 ? ' is-active' : '');
+      card.setAttribute('aria-label', '切换到' + t.name + '模板');
+      var thumb = document.createElement('img');
+      thumb.src = t.url;
+      thumb.alt = t.name;
+      thumb.draggable = false;
+      var label = document.createElement('span');
+      label.className = 'item-name';
+      var cn = document.createElement('span');
+      cn.textContent = t.name;
+      var en = document.createElement('span');
+      en.className = 'en';
+      en.textContent = t.en || '';
+      label.appendChild(cn);
+      label.appendChild(en);
+      card.appendChild(thumb);
+      card.appendChild(label);
+      card.addEventListener('click', function () { requestSwitch(i); });
+      templateGrid.appendChild(card);
+    });
+  }
+
+  function setActiveTemplate(i) {
+    activeIndex = i;
+    var cards = templateGrid.querySelectorAll('.template-card');
+    for (var j = 0; j < cards.length; j++) cards[j].classList.toggle('is-active', j === i);
+  }
+
+  function requestSwitch(i) {
+    if (i === activeIndex) return;
+    if (!dirty) { switchTemplate(i); return; }
+    pendingIndex = i;
+    openModal();
+  }
+
+  function switchTemplate(i) {
+    img.src = TEMPLATES[i].url;
+    dctx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+    placedStickers = [];
+    dirty = false;
+    undoStack.length = 0;
+    updateUndoBtn();
+    setActiveTemplate(i);
+    toast('已切换到' + TEMPLATES[i].name + '模板 · Switched to ' + TEMPLATES[i].en);
+  }
+
+  function openModal() {
+    modalMask.hidden = false;
+    requestAnimationFrame(function () { modalMask.classList.add('show'); });
+    modalConfirm.focus();
+  }
+
+  function closeModal() {
+    modalMask.classList.remove('show');
+    setTimeout(function () { modalMask.hidden = true; }, 200);
+  }
+
+  modalConfirm.addEventListener('click', function () {
+    var i = pendingIndex;
+    closeModal();
+    if (i !== null) switchTemplate(i);
+  });
+  modalCancel.addEventListener('click', closeModal);
+  modalMask.addEventListener('click', function (e) {
+    if (e.target === modalMask) closeModal();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !modalMask.hidden) closeModal();
+  });
+
+  buildTemplates();
+
+  // ===== 装饰贴纸 =====
+  var STICKERS = {
+    deco: [
+      { name: '蝴蝶结', en: 'Bow', grid: [
+        '................','................','................','.......##.......',
+        '.......##.......','..###..##..###..','.#####.##.#####.','######.##.######',
+        '######.##.######','.#####.##.#####.','..###..##..###..','.......##.......',
+        '......####......','......####......','................','................'
+      ] },
+      { name: '皇冠', en: 'Crown', grid: [
+        '................','....##....##....','...####..####...','...##########...',
+        '..############..','..############..','..############..','..############..',
+        '..############..','..############..','..############..','..############..',
+        '...##########...','...##########...','................','................'
+      ] },
+      { name: '铃铛', en: 'Bell', grid: [
+        '................','......####......','.....######.....','.....######.....',
+        '....########....','....########....','....########....','...##########...',
+        '...##########...','...##########...','..############..','..############..',
+        '..############..','..#..........#..','................','................'
+      ] },
+      { name: '礼帽', en: 'Top Hat', grid: [
+        '................','..############..','..############..','..############..',
+        '..############..','..############..','..############..','..############..',
+        '################','################','################','################',
+        '................','................','................','................'
+      ] },
+      { name: '墨镜', en: 'Shades', grid: [
+        '................','................','................','..##........##..',
+        '.####......####.','######....######','######....######','################',
+        '################','.##############.','..############..','................',
+        '................','................','................','................'
+      ] },
+      { name: '耳机', en: 'Headset', grid: [
+        '................','..##........##..','.####......####.','######....######',
+        '######....######','######....######','######....######','.####......####.',
+        '..##........##..','................','..############..','..############..',
+        '..############..','..############..','................','................'
+      ] },
+      { name: '光环', en: 'Halo', grid: [
+        '................','................','...##########...','..############..',
+        '.##############.','##############..','##############..','.##############.',
+        '..############..','...##########...','................','................',
+        '................','................','................','................'
+      ] },
+      { name: '小胡子', en: 'Mustache', grid: [
+        '................','................','................','................',
+        '..##........##..','.####......####.','########..######','.###############',
+        '..#############.','....#########...','......#####.....','.......###......',
+        '................','................','................','................'
+      ] }
+    ],
+    env: [
+      { name: '花朵', en: 'Flower', grid: [
+        '................','......####......','.....######.....','....##.##.##....',
+        '...##..##..##...','...##..##..##...','....##.##.##....','.....######.....',
+        '......####......','.......##.......','.......##.......','......####......',
+        '......####......','.......##.......','................','................'
+      ] },
+      { name: '星星', en: 'Star', grid: [
+        '................','.......##.......','.......##.......','......####......',
+        '......####......','.....######.....','.....######.....','.##..######..##.',
+        '..##..####..##..','...##########...','....########....','....########....',
+        '.....######.....','.....######.....','......####......','................'
+      ] },
+      { name: '云朵', en: 'Cloud', grid: [
+        '................','................','.........####...','.......#######..',
+        '..##..##########','.####.##########','################','################',
+        '################','..############..','................','................',
+        '................','................','................','................'
+      ] },
+      { name: '太阳', en: 'Sun', grid: [
+        '................','.....#.....#....','......####......','.....######.....',
+        '....########....','.##############.','################','################',
+        '.##############.','....########....','.....######.....','......####......',
+        '.....#.....#....','................','................','................'
+      ] },
+      { name: '爱心', en: 'Heart', grid: [
+        '................','....##....##....','...####..####...','..############..',
+        '.##############.','.##############.','.##############.','.##############.',
+        '..############..','...##########...','....########....','.....######.....',
+        '......####......','.......##.......','................','................'
+      ] },
+      { name: '气球', en: 'Balloon', grid: [
+        '................','....######......','...########.....','..##########....',
+        '..##########....','..##########....','..##########....','...########.....',
+        '....######......','.....####.......','......##........','......##........',
+        '......##........','......##........','......##........','................'
+      ] },
+      { name: '月亮', en: 'Moon', grid: [
+        '................','.....######.....','...##########...','..############..',
+        '.##############.','##############..','#############...','############....',
+        '###########.....','##########......','#########.......','########........',
+        '######..........','####............','................','................'
+      ] },
+      { name: '蝴蝶', en: 'Butterfly', grid: [
+        '................','................','..##.......##...','.####.....####..',
+        '######...######.','########.######.','########.######.','######...######.',
+        '..##.......##...','...###....###...','....##....##....','.....######.....',
+        '......####......','.......##.......','................','................'
+      ] }
+    ]
+  };
+
+  var placedStickers = [];
+  var activeSticker = null;
+  var stickerRotation = 0;
+
+  function stickerPixelSize() { return cellPx / 4; }
+
+  function isStickerEdge(tpl, r, c) {
+    var w = tpl.grid[0].length, h = tpl.grid.length;
+    if (r === 0 || r === h - 1 || c === 0 || c === w - 1) return true;
+    return tpl.grid[r][c - 1] !== '#' || tpl.grid[r][c + 1] !== '#' ||
+           tpl.grid[r - 1][c] !== '#' || tpl.grid[r + 1][c] !== '#';
+  }
+
+  function paintSticker(tpl, cx, cy, color, scale, rot) {
+    var spx = stickerPixelSize() * scale;
+    var w = tpl.grid[0].length, h = tpl.grid.length;
+    var rad = rot * Math.PI / 180;
+    dctx.save();
+    dctx.translate(cx, cy);
+    dctx.rotate(rad);
+    for (var r = 0; r < h; r++) {
+      for (var c = 0; c < w; c++) {
+        if (tpl.grid[r][c] !== '#') continue;
+        dctx.fillStyle = isStickerEdge(tpl, r, c) ? '#000000' : color;
+        dctx.fillRect((c - w / 2) * spx, (r - h / 2) * spx, spx, spx);
+      }
+    }
+    dctx.restore();
+  }
+
+  function clearStickerRect(s) {
+    var spx = stickerPixelSize() * s.scale;
+    dctx.save();
+    dctx.translate(s.cx, s.cy);
+    dctx.rotate(s.rot * Math.PI / 180);
+    dctx.clearRect(-s.side / 2, -s.side / 2, s.side, s.side);
+    dctx.restore();
+  }
+
+  function drawStickerPreview(canvas, tpl, color, rot) {
+    var ctx = canvas.getContext('2d');
+    var w = tpl.grid[0].length, h = tpl.grid.length;
+    var angle = rot || 0;
+    var rad = angle * Math.PI / 180;
+    var R = Math.abs(Math.cos(rad)) + Math.abs(Math.sin(rad));
+    var px = (canvas.width / w) / Math.max(R, 1);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+    ctx.rotate(rad);
+    for (var r = 0; r < h; r++) {
+      for (var c = 0; c < w; c++) {
+        if (tpl.grid[r][c] !== '#') continue;
+        ctx.fillStyle = isStickerEdge(tpl, r, c) ? '#000000' : color;
+        ctx.fillRect((c - w / 2) * px, (r - h / 2) * px, px, px);
+      }
+    }
+    ctx.restore();
+  }
+
+  function refreshStickerPreviews() {
+    var items = document.querySelectorAll('.sticker-item');
+    for (var i = 0; i < items.length; i++) {
+      var b = items[i];
+      var tpl = STICKERS[b.getAttribute('data-cat')][parseInt(b.getAttribute('data-idx'), 10)];
+      var isActive = activeSticker && b.getAttribute('data-cat') === activeSticker.cat &&
+                     parseInt(b.getAttribute('data-idx'), 10) === activeSticker.idx;
+      drawStickerPreview(b.querySelector('canvas'), tpl, brushColor, isActive ? stickerRotation : 0);
+    }
+  }
+
+  function buildStickerCategory(catKey, gridEl) {
+    var list = STICKERS[catKey];
+    list.forEach(function (tpl, i) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'sticker-item';
+      btn.setAttribute('data-cat', catKey);
+      btn.setAttribute('data-idx', i);
+      btn.setAttribute('aria-label', (catKey === 'deco' ? '饰品' : '环境') + '贴纸：' + tpl.name);
+      var cv = document.createElement('canvas');
+      cv.className = 'sticker-preview';
+      cv.width = 48;
+      cv.height = 48;
+      drawStickerPreview(cv, tpl, brushColor);
+      var label = document.createElement('span');
+      label.className = 'item-name';
+      var cn = document.createElement('span');
+      cn.textContent = tpl.name;
+      var en = document.createElement('span');
+      en.className = 'en';
+      en.textContent = tpl.en || '';
+      label.appendChild(cn);
+      label.appendChild(en);
+      btn.appendChild(cv);
+      btn.appendChild(label);
+      btn.addEventListener('click', function () { toggleSticker(catKey, i); });
+      gridEl.appendChild(btn);
+    });
+  }
+
+  function toggleSticker(cat, idx) {
+    if (activeSticker && activeSticker.cat === cat && activeSticker.idx === idx) {
+      activeSticker = null;
+    } else {
+      activeSticker = { cat: cat, idx: idx, tpl: STICKERS[cat][idx] };
+    }
+    updateStickerActiveUI();
+    updateCanvasCursor();
+  }
+
+  function updateStickerActiveUI() {
+    var items = document.querySelectorAll('.sticker-item');
+    for (var i = 0; i < items.length; i++) {
+      var b = items[i];
+      var on = activeSticker && b.getAttribute('data-cat') === activeSticker.cat &&
+               parseInt(b.getAttribute('data-idx'), 10) === activeSticker.idx;
+      b.classList.toggle('is-active', !!on);
+    }
+  }
+
+  function updateCanvasCursor() {
+    drawCanvas.style.cursor = activeSticker ? 'copy' : 'crosshair';
+  }
+
+  function stampStickerAt(px, py) {
+    var tpl = activeSticker.tpl;
+    var scale = brushSize;
+    var rot = stickerRotation;
+    var spx = stickerPixelSize() * scale;
+    var w = tpl.grid[0].length;
+    var side = w * spx;
+    var color = brushColor;
+    for (var i = 0; i < placedStickers.length; i++) {
+      var s = placedStickers[i];
+      if (s.tpl !== tpl) continue;
+      var rad = s.rot * Math.PI / 180;
+      var R = Math.abs(Math.cos(rad)) + Math.abs(Math.sin(rad));
+      var half = (s.side / 2) * R;
+      if (Math.abs(px - s.cx) <= half && Math.abs(py - s.cy) <= half) {
+        clearStickerRect(s);
+        paintSticker(s.tpl, s.cx, s.cy, color, s.scale, s.rot);
+        s.color = color;
+        dirty = true;
+        return;
+      }
+    }
+    paintSticker(tpl, px, py, color, scale, rot);
+    placedStickers.push({ tpl: tpl, cx: px, cy: py, side: side, scale: scale, rot: rot, color: color });
+    dirty = true;
+  }
+
+  var dropBtns = document.querySelectorAll('.sticker-drop');
+  dropBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var body = document.getElementById(btn.getAttribute('aria-controls'));
+      var expanded = btn.getAttribute('aria-expanded') === 'true';
+      btn.setAttribute('aria-expanded', String(!expanded));
+      body.hidden = expanded;
+    });
+  });
+
+  buildStickerCategory('deco', document.getElementById('decoGrid'));
+  buildStickerCategory('env', document.getElementById('envGrid'));
+
+  var rotCW = document.getElementById('rotCW');
+  var rotCCW = document.getElementById('rotCCW');
+  var rotIndicator = document.getElementById('rotIndicator');
+  var rotArrow = rotIndicator.querySelector('svg');
+  function rotateSticker(delta) {
+    stickerRotation += delta;
+    rotArrow.style.transform = 'rotate(' + stickerRotation + 'deg)';
+    refreshStickerPreviews();
+  }
+  rotCW.addEventListener('click', function () { rotateSticker(45); });
+  rotCCW.addEventListener('click', function () { rotateSticker(-45); });
+
+  // ===== 指针绘制 =====
+  drawCanvas.addEventListener('pointerdown', function (e) {
+    e.preventDefault();
+    if (activeSticker) {
+      snapshot();
+      var pos = getCanvasPos(e);
+      stampStickerAt(pos.x, pos.y);
+      return;
+    }
+    drawCanvas.setPointerCapture(e.pointerId);
+    drawing = true;
+    lastCell = null;
+    snapshot();
+    strokeTo(getCell(e));
+  });
+
+  drawCanvas.addEventListener('pointermove', function (e) {
+    if (!drawing) return;
+    strokeTo(getCell(e));
+  });
+
+  function endStroke() {
+    drawing = false;
+    lastCell = null;
+  }
+  drawCanvas.addEventListener('pointerup', endStroke);
+  drawCanvas.addEventListener('pointercancel', endStroke);
+  drawCanvas.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+  // ===== 调色板 =====
+  COLORS.forEach(function (color, i) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'swatch' + (i === 0 ? ' is-active' : '');
+    btn.style.background = color;
+    btn.setAttribute('aria-label', '颜色：' + NAMES[i]);
+    btn.addEventListener('click', function () {
+      eraser = false;
+      updateEraserBtn();
+      brushColor = color;
+      var swatches = paletteEl.querySelectorAll('.swatch');
+      for (var j = 0; j < swatches.length; j++) {
+        swatches[j].classList.toggle('is-active', j === i);
+      }
+      refreshStickerPreviews();
+    });
+    paletteEl.appendChild(btn);
+  });
+
+  // ===== 橡皮 / 网格 / 撤销按钮 =====
+  function updateEraserBtn() {
+    eraserBtn.classList.toggle('is-active', eraser);
+    eraserBtn.setAttribute('aria-pressed', String(eraser));
+  }
+  eraserBtn.addEventListener('click', function () {
+    eraser = !eraser;
+    updateEraserBtn();
+    if (eraser) {
+      var swatches = paletteEl.querySelectorAll('.swatch');
+      for (var j = 0; j < swatches.length; j++) swatches[j].classList.remove('is-active');
+    }
+  });
+
+  gridBtn.addEventListener('click', function () {
+    showGrid = !showGrid;
+    gridBtn.classList.toggle('is-active', showGrid);
+    gridBtn.setAttribute('aria-pressed', String(showGrid));
+    drawGrid();
+  });
+
+  undoBtn.addEventListener('click', doUndo);
+
+  // ===== 笔刷尺寸 =====
+  var sizeBtns = document.querySelectorAll('.size-btn');
+  sizeBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      brushSize = parseInt(btn.getAttribute('data-size'), 10);
+      sizeBtns.forEach(function (b) { b.classList.toggle('is-active', b === btn); });
+    });
+  });
+
+  // ===== 保存 / 重置 =====
+  saveBtn.addEventListener('click', saveImage);
+  resetBtn.addEventListener('click', clearAll);
+
+  // ===== 快捷键 =====
+  document.addEventListener('keydown', function (e) {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      doUndo();
+    }
+  });
+
+  // ===== 图片加载 =====
+  if (img.complete && img.naturalWidth > 0) {
+    initCanvas();
+  } else {
+    img.addEventListener('load', initCanvas);
+  }
+
+  var corsRetried = false;
+  img.addEventListener('error', function () {
+    if (!corsRetried) {
+      corsRetried = true;
+      img.removeAttribute('crossorigin');
+      img.src = img.src;
+    }
+  });
+})();
+</script>
+</body>
+</html>
