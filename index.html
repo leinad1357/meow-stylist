@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="color-scheme" content="light">
 <title>Meow星造型师</title>
 <link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Press+Start+2P&family=Noto+Sans+SC:wght@400;500;700;900&display=swap">
@@ -29,6 +29,7 @@
     background-size: 26px 26px;
     color: var(--ink);
     min-height: 100vh;
+    overflow-x: hidden;
   }
 
   /* ===== 头部 ===== */
@@ -569,6 +570,9 @@
   var lastCell = null;
   var dirty = false;
   var undoStack = [];
+  var touchPointers = {};
+  var strokeDirtyAtStart = false;
+  var placingSticker = false;
 
   // ===== 画布初始化 =====
   function initCanvas() {
@@ -1116,9 +1120,30 @@
   rotCCW.addEventListener('click', function () { rotateSticker(-45); });
 
   // ===== 指针绘制 =====
+  function cancelStroke() {
+    if ((drawing || placingSticker) && undoStack.length > 0) {
+      var entry = undoStack.pop();
+      dctx.putImageData(entry.img, 0, 0);
+      placedStickers = entry.stickers;
+      dirty = strokeDirtyAtStart;
+      updateUndoBtn();
+    }
+    drawing = false;
+    lastCell = null;
+  }
+
   drawCanvas.addEventListener('pointerdown', function (e) {
     e.preventDefault();
+    if (e.pointerType === 'touch') {
+      touchPointers[e.pointerId] = true;
+      if (Object.keys(touchPointers).length > 1) {
+        cancelStroke();
+        return;
+      }
+    }
     if (activeSticker) {
+      placingSticker = true;
+      strokeDirtyAtStart = dirty;
       snapshot();
       var pos = getCanvasPos(e);
       stampStickerAt(pos.x, pos.y);
@@ -1127,6 +1152,7 @@
     drawCanvas.setPointerCapture(e.pointerId);
     drawing = true;
     lastCell = null;
+    strokeDirtyAtStart = dirty;
     snapshot();
     strokeTo(getCell(e));
   });
@@ -1136,7 +1162,11 @@
     strokeTo(getCell(e));
   });
 
-  function endStroke() {
+  function endStroke(e) {
+    if (e.pointerType === 'touch' && touchPointers[e.pointerId]) {
+      delete touchPointers[e.pointerId];
+    }
+    placingSticker = false;
     drawing = false;
     lastCell = null;
   }
